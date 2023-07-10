@@ -123,9 +123,9 @@ local function CreateNamespace(...)
                 --- @type Logger
                 local loggerLib = LibStub(ns:LibName(ns.M.Logger))
                 if loggerLib then
-                    newLibInstance.logger = loggerLib:NewLogger(name)
-                    newLibInstance.logger:log(30, 'New Lib: %s', newLibInstance.major)
-                    function newLibInstance:GetLogger() return self.logger end
+                    newLibInstance.logger = function() return loggerLib:NewLogger(name) end
+                    newLibInstance.logger():log(30, 'New Lib: %s', newLibInstance.major)
+                    function newLibInstance:GetLogger() return self.logger() end
                 end
                 ns:Register(name, newLibInstance)
             end)

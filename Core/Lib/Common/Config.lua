@@ -41,7 +41,7 @@ local function ConfirmAndReload() return O.WidgetMixin:ConfirmAndReload() end
 --- @return FrameWidget
 local function GetFrameWidget(frameIndex) return FF:GetFrameByIndex(frameIndex).widget end
 --- @return Profile_Bar
-local function GetBarConfig(frameIndex) return GetFrameWidget(frameIndex):GetConfig() end
+local function GetBarConfig(frameIndex) return P:GetBar(frameIndex) end
 
 --- @param applyFunction function Format: applyFuntion(ButtonUIWidget)
 local function ApplyForEachButton(applyFunction, configVal)
@@ -123,17 +123,17 @@ local function GetFrameStateSetterHandler(frameIndex)
     return function(_, v) GetFrameWidget(frameIndex):SetFrameState(v) end
 end
 local function GetFrameStateGetterHandler(frameIndex)
-    return function(_) return GetFrameWidget(frameIndex):IsShownInConfig() end
+    return function(_) return P:IsShownInConfig(frameIndex) end
 end
 local function GetShowButtonIndexStateGetterHandler(frameIndex)
-    return function(_) return GetFrameWidget(frameIndex):IsShowIndex() end
+    return function(_) return P:IsShowIndex(frameIndex) end
 end
 local function GetShowButtonIndexStateSetterHandler(frameIndex)
     --TODO: NEXT: Use events instead
     return function(_, v) GetFrameWidget(frameIndex):ShowButtonIndices(v) end
 end
 local function GetShowKeybindTextStateGetterHandler(frameIndex)
-    return function(_) return GetFrameWidget(frameIndex):IsShowKeybindText() end
+    return function(_) return P:IsShowKeybindText(frameIndex) end
 end
 local function GetShowKeybindTextStateSetterHandler(frameIndex)
     --TODO: NEXT: Use events instead
@@ -150,7 +150,7 @@ local function GetLockStateGetterHandler(frameIndex)
 end
 
 local function GetRowSizeGetterHandler(frameIndex)
-    return function(_) return GetBarConfig(frameIndex).widget.rowSize or 2 end
+    return function(_) return P:GetRowSize(frameIndex) end
 end
 local function GetRowSizeSetterHandler(frameIndex)
     return function(_, v)
@@ -159,7 +159,7 @@ local function GetRowSizeSetterHandler(frameIndex)
     end
 end
 local function GetColSizeGetterHandler(frameIndex)
-    return function(_) return GetBarConfig(frameIndex).widget.colSize or 6 end
+    return function(_) return P:GetColumnSize(frameIndex) end
 end
 local function GetColSizeSetterHandler(frameIndex)
     return function(_, v)
@@ -256,13 +256,12 @@ local function PropsAndMethods(o)
 
     --- Sets up Ace config dialog
     function o:Initialize()
-        local db = ns.db
         local options = self:GetOptions()
         -- Get the option table for profiles
         -- options.args.profiles = AceDBOptions:GetOptionsTable(self.db)
         AceConfig:RegisterOptionsTable(ns.name, options, { GC.C.SLASH_COMMAND_OPTIONS })
         AceConfigDialog:AddToBlizOptions(ns.name, ns.name)
-        options.args.profiles = AceDBOptions:GetOptionsTable(db)
+        options.args.profiles = AceDBOptions:GetOptionsTable(ns.db)
     end
 
     function o:GetOptions()

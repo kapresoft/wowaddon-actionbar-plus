@@ -11,7 +11,7 @@ local _, ns = ...
 local O, GC, M, LibStub, API = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns.O.API
 local pformat = ns.pformat
 local P, BaseAPI = O.Profile, O.BaseAPI
-local String = O.String
+local String, WMX = O.String, O.WidgetMixin
 local AceEvent = O.AceLibrary.AceEvent
 local IsBlank, IsNotBlank, ParseBindingDetails = String.IsBlank, String.IsNotBlank, String.ParseBindingDetails
 
@@ -303,6 +303,7 @@ local function PropsAndMethods(o)
 
     function o:Reset()
         self:ResetCooldown()
+        self:HideOverlayGlow()
         self:ClearAllText()
     end
 
@@ -324,6 +325,7 @@ local function PropsAndMethods(o)
         if String.IsBlank(text) then text = '' end
         self.button().text:SetText(text)
     end
+
     --- Sets the name of the button (Used by Macros)
     --- @param text string
     function o:SetNameText(text) self.button().nameText:SetEllipsesText(text) end
@@ -331,6 +333,7 @@ local function PropsAndMethods(o)
     function o:SetTextDelayed(text, optionalDelay)
         C_Timer.After(optionalDelay or 0.1, function() self:SetText(text) end)
     end
+
     --- @param state boolean true will show the button index number
     function o:ShowIndex(state)
         local text = ''
@@ -345,24 +348,34 @@ local function PropsAndMethods(o)
         local button = self.button()
         if not self:HasKeybindings() then
             button.keybindText:SetText(text)
+            self:RefreshTexts()
             return
         end
 
-        if true == state then
-            local bindings = self:GetBindings()
-            if bindings and bindings.key1Short then
-                text = bindings.key1Short
-            end
+        local bindings = self:GetBindings()
+        if not self:HasValidKeybindings(bindings) then
+            button.keybindText:SetText(text)
+            self:RefreshTexts()
+            return
         end
+
+        if bindings and bindings.key1Short then
+            text = bindings.key1Short
+        end
+
         button.keybindText:SetText(text)
         self:RefreshTexts()
     end
 
-    function o:HasKeybindings()
-        local b = self:GetBindings()
-        if not b then return false end
-        return b and String.IsNotBlank(b.key1)
+    function o:HasKeybindings() return self:HasValidKeybindings(self:GetBindings()) end
+
+    --- @param bindingDetails BindingDetails
+    function o:HasValidKeybindings(bindingDetails)
+        if not bindingDetails then return false end
+        return bindingDetails and String.IsNotBlank(bindingDetails.key1)
     end
+
+
     function o:ClearAllText()
         self:SetText('')
         self.button().keybindText:SetText('')
@@ -522,8 +535,23 @@ local function PropsAndMethods(o)
     end
 
     function o:UpdateItemOrMacroState()
-        if self:IsItem() then self:UpdateItemState(); return end
-        self:UpdateMacroState()
+        if self:IsItem() then
+            self:UpdateItemState()
+            return
+        end
+        if self:IsMacro() then self:UpdateMacroState() end
+    end
+
+    function o:UpdateSpellState()
+        if not self:IsSpell() then return end
+        self:UpdateSpellCharges(self:GetSpellName())
+    end
+
+    ---@param spellName SpellName
+    function o:UpdateSpellCharges(spellName)
+        local currentCharge, maxCharge = GetSpellCharges(spellName)
+        if not maxCharge or (maxCharge <= 1) then return end
+        self:SetText(currentCharge)
     end
 
     function o:UpdateItemState()
@@ -588,7 +616,8 @@ local function PropsAndMethods(o)
 
     function o:UpdateState()
         self:UpdateCooldown()
-        if self:UpdateItemOrMacroState() then self:UpdateItemOrMacroState() end
+        self:UpdateItemOrMacroState()
+        self:UpdateSpellState()
         self:UpdateUsable()
         self:SetHighlightDefault()
         self:SetNormalIconAlphaDefault()
@@ -1058,6 +1087,8 @@ local function PropsAndMethods(o)
             self:SetText('')
             local icon
             icon = scd.spell.icon
+            self:UpdateSpellCharges(scd.spell.name)
+
             if self:IsStealthSpell() then
                 local spellInfo = self:GetSpellData()
                 icon = API:GetSpellIcon(spellInfo)

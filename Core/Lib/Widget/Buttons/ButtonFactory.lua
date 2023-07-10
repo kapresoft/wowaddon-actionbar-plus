@@ -159,9 +159,11 @@ function L:ApplyForEachVisibleFrames(applyFunction)
     if #frames <= 0 then return end
     -- `_` is the index
     for _,f in ipairs(frames) do
-        --- @type FrameWidget
-        local fw = _G[f].widget
-        if fw and fw:IsShownInConfig() then applyFunction(fw) end
+        if _G[f] then
+            --- @type FrameWidget
+            local fw = _G[f].widget
+            if fw and fw:IsShownInConfig() then applyFunction(fw) end
+        end
     end
 end
 --- Alias for #ApplyForEachVisibleFrames(applyFunction)
@@ -265,6 +267,8 @@ end
 Initializer
 -------------------------------------------------------------------------------]]
 local function InitButtonFactory()
+    if GC.V2 == true then return end
+
     InitButtonGameTooltipHooks()
 
     L:RegisterMessage(MSG.OnAddOnInitialized, function(msg)

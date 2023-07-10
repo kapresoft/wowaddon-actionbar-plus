@@ -4,6 +4,7 @@ Local Vars
 --- @type Namespace
 local _, ns = ...
 local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
+local pformat = ns.pformat
 
 local SpellAttributeSetter, WAttr, PH = O.SpellAttributeSetter, GC.WidgetAttributes, O.PickupHandler
 local API, Assert = O.API, O.Assert
@@ -14,6 +15,7 @@ New Instance
 -------------------------------------------------------------------------------]]
 --- @class SpellDragEventHandler : DragEventHandler
 local L = LibStub:NewLibrary(M.SpellDragEventHandler); if not L then return end
+local p = L.logger()
 
 --[[-----------------------------------------------------------------------------
 Methods
@@ -41,6 +43,28 @@ function L:Handle(btnUI, cursorInfo)
 
     SpellAttributeSetter(btnUI, btnData)
 end
+
+
+
+---@param btn ActionButtonWidget
+---@param cursor CursorUtil
+---@return boolean returns true if the cursor was handled appropriately
+function L:HandleV2(btn, cursor)
+    local spellCursor = API:ToSpellCursorInfo(cursor:GetCursor())
+    p:log('HandleV2: btn=%s cursor=%s', btn.button():GetName(), pformat(spellCursor))
+    if IsPassiveSpell(spellCursor.spellID) then return false end
+
+    local type = spellCursor.type
+    local d = btn:config()
+    --PH:PickupExisting(btn)
+    d[WAttr.TYPE] = type
+    d[type] = API:GetSpellInfo(spellCursor.spellID)
+
+    SpellAttributeSetter:SetAttributesV2(btn)
+
+    return true
+end
+
 
 function L:IsValid(btnUI, cursorInfo)
     return cursorInfo.type == nil or cursorInfo == nil or cursorInfo.id == nil

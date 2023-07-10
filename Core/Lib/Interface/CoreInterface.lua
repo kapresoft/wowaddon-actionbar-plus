@@ -4,6 +4,7 @@ Alias Functions
 --- @alias FrameHandlerFunction fun(frameWidget:FrameWidget) : void
 --- @alias ButtonPredicateFunction fun(btnWidget:ButtonUIWidget) : boolean
 --- @alias ButtonHandlerFunction fun(btnWidget:ButtonUIWidget) : void
+--- @alias ButtonHandlerSpellAuraFunction fun(btnWidget:ButtonUIWidget, auraInfo:AuraInfo) : void
 
 --[[-----------------------------------------------------------------------------
 BaseLibraryObject
@@ -14,7 +15,7 @@ local function BaseLibraryObject_Def()
     --- @type table
     o.mt = { __tostring = function() end }
 
-    --- @type Logger
+    --- @type fun() : Logger
     o.logger = {}
 
     --- @return string
@@ -55,8 +56,6 @@ BaseLibraryObject_Initialized
 local BaseLibraryObject_Initialized = {}
 --- @type ActionbarPlus
 BaseLibraryObject_Initialized.addon = {}
---- @type Profile_Config
-BaseLibraryObject_Initialized.profile = {}
 
 --[[-----------------------------------------------------------------------------
 BaseLibraryObject_Initialized_WithAceEvent
@@ -65,5 +64,3 @@ BaseLibraryObject_Initialized_WithAceEvent
 local BaseLibraryObject_Initialized_WithAceEvent = {}
 --- @type ActionbarPlus
 BaseLibraryObject_Initialized_WithAceEvent.addon = {}
---- @type Profile_Config
-BaseLibraryObject_Initialized_WithAceEvent.profile = {}

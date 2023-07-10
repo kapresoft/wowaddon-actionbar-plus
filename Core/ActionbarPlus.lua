@@ -71,7 +71,7 @@ local function RegisterEvents(addon)
 
     --- @class ActionbarPlusEvent : ActionbarPlusEventMixin
     local addonEvents = ns:K():CreateAndInitFromMixin(O.ActionbarPlusEventMixin, addon)
-    addon.addonEvents = addonEvents
+    addon.addonEvents = function() return addonEvents end
 
     return frame
 end
@@ -200,7 +200,6 @@ local methods = {
     --- @param self ActionbarPlus
     ['OnInitialize'] = function(self)
         self:InitializeDb()
-        self.barBindings = WMX:GetBarBindingsMap()
         self:RegisterSlashCommands()
         self:RegisterHooks()
 

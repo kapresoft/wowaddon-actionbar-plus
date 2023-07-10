@@ -59,6 +59,25 @@ function L:SetAttributes(btnUI, btnData)
     self:OnAfterSetAttributes(btnUI)
 end
 
+---@param btn ActionButtonWidget The UIFrame
+function L:SetAttributesV2(btn)
+    local w = btn.widget
+    btn:ResetWidgetAttributes()
+
+    local spellInfo = btn:GetSpellData()
+    if type(spellInfo) ~= 'table' then return end
+    if not spellInfo.id then return end
+    AssertNotNil(spellInfo.id, 'btnData[spell].spellInfo.id')
+
+    local spellIcon = GC.Textures.TEXTURE_EMPTY
+    if spellInfo.icon then spellIcon = API:GetSpellIcon(spellInfo) end
+    btn:SetIcon(spellIcon)
+    btn:SetAttribute(WAttr.TYPE, WAttr.SPELL)
+    local spellAttrValue = API:GetSpellAttributeValue(spellInfo)
+    btn:SetAttribute(WAttr.SPELL, spellAttrValue)
+    --self:OnAfterSetAttributes(btn)
+end
+
 ---@param btnUI ButtonUI
 function L:ShowTooltip(btnUI)
     local w = btnUI.widget

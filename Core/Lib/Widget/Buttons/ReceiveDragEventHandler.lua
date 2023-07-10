@@ -17,11 +17,16 @@ local SPELL, ITEM, MACRO, MACRO_TEXT, MOUNT, COMPANION, BATTLE_PET =
 --[[-----------------------------------------------------------------------------
 Interface
 -------------------------------------------------------------------------------]]
----@class DragEventHandler : BaseLibraryObject
----@param btnUI ButtonUI
----@param cursorInfo CursorInfo
+--- @class DragEventHandler : BaseLibraryObject
 local DragEventHandler = {
-    ['Handle'] = function(btnUI, cursorInfo)  end
+    --- @param self DragEventHandler
+    --- @param btnUI ButtonUI
+    --- @param cursorInfo CursorInfo
+    ['Handle'] = function(self, btnUI, cursorInfo)  end,
+    --- @param self DragEventHandler
+    --- @param btn ActionButtonWidget
+    --- @param cursor CursorUtil
+    ['HandleV2'] = function(self, btn, cursor)  end
 }
 
 --[[-----------------------------------------------------------------------------
@@ -29,10 +34,11 @@ New Instance
 -------------------------------------------------------------------------------]]
 ---@class ReceiveDragEventHandler : BaseLibraryObject
 local L = LibStub:NewLibrary(M.ReceiveDragEventHandler); if not L then return end
-local p = L.logger
+local p = L.logger()
 
 --- Handlers with Interface Method ==> `Handler:Handle(btnUI, spellCursorInfo)`
 --- README: Also need to add the attribute setterin in ButtonFactor#AttributeSetters
+--- @type table<string, DragEventHandler>
 local handlers = {
     [W.SPELL] = O.SpellDragEventHandler,
     [W.ITEM] = O.ItemDragEventHandler,
@@ -68,4 +74,17 @@ function L:Handle(btnUI, cursor)
 
     handlers[actionType]:Handle(btnUI, cursorInfo)
     btnUI.widget:CleanupActionTypeData()
+end
+
+--- @param btn ActionButtonWidget
+--- @param cursor CursorUtil
+function L:HandleV2(btn, cursor)
+    local handler = handlers[cursor:GetType()]; if not handler then return end
+    local cursorInfo = cursor:GetCursor()
+    p:log(10, 'HandleV2: CursorInfo=%s handler=%s',
+            pformat:B()(cursorInfo), tostring(handler))
+
+    if not self:IsSupportedCursorType(cursor) then return end
+    if handler.HandleV2 then return handler:HandleV2(btn, cursor) end
+    --btnUI.widget:CleanupOtherActionTypeData(cursor:GetType())
 end

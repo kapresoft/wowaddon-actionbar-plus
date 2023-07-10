@@ -9,6 +9,8 @@
     <Include file='Common\_Common.xml'/>
     <Include file='Widget\_Widget.xml'/>
 
+    <Include file='V2\_V2.xml'/>
+
     <!--@debug@-->
     <Include file='Developer\_Developer.xml'/>
     <!--@end-debug@-->

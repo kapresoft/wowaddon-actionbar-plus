@@ -6,4 +6,8 @@
     <Script file="Namespace.lua"/>
     <Script file="External-Lib-Wrapper.lua"/>
 
+    <!--@debug@-->
+    <Include file='Developer\_Developer.xml'/>
+    <!--@end-debug@-->
+
 </Ui>

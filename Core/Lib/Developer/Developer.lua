@@ -12,7 +12,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local _, ns = ...
-local O, GC = ns:LibPack2()
+local O, GC = ns.O, ns.O.GlobalConstants
 
 local AceEvent = O.AceLibrary.AceEvent
 local BF = O.ButtonFactory
@@ -28,6 +28,9 @@ local p = O.LogFactory('Developer')
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
+function L:SpecIndex() return GC:GetSpecializationIndex() end
+function L:PlayerClass() return GC:GetPlayerClass() end
+
 function L:TT()
     self:SendMessage(GC.M.OnTooltipFrameUpdate)
 end

@@ -30,9 +30,8 @@ New Instance
 -------------------------------------------------------------------------------]]
 
 --- @class EquipmentSetDragEventHandler : DragEventHandler
-local L = LibStub:NewLibrary(M.EquipmentSetDragEventHandler)
-
-local p = L.logger
+local L = LibStub:NewLibrary(M.EquipmentSetDragEventHandler); if not L then return end
+local p = L.logger()
 
 --- @class EquipmentSetAttributeSetter : BaseAttributeSetter
 local S = LibStub:NewLibrary(M.EquipmentSetAttributeSetter)

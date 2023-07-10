@@ -2,7 +2,7 @@
 Blizzard Vars
 -------------------------------------------------------------------------------]]
 local GetSpellSubtext, GetSpellInfo, GetSpellLink = GetSpellSubtext, GetSpellInfo, GetSpellLink
-local GetCursorInfo, GetSpellCooldown = GetCursorInfo, GetSpellCooldown
+local GetSpellCooldown, GetSpellCooldown
 local C_ToyBox, C_Container = C_ToyBox, C_Container
 local UnitIsDead, GetUnitName = UnitIsDead, GetUnitName
 local UnitClass, IsStealthed, GetShapeshiftForm = UnitClass, IsStealthed, GetShapeshiftForm
@@ -55,6 +55,18 @@ function S:GetCursorInfo()
         c.type = c.info2
     end
 
+    return c
+end
+
+--- @param cursor CursorInfo
+--- @return CursorInfo_Spell
+function S:ToSpellCursorInfo(cursor)
+    -- actionType string spell, item, macro, mount, etc..
+    local actionType, info1, info2, info3 = GetCursorInfo()
+    if 'spell' ~= actionType then return nil end
+    --- @type CursorInfo_Spell
+    local c = { type = cursor.type, spellIndex = info1, bookType = info2,
+                spellID = cursor.info3 }
     return c
 end
 

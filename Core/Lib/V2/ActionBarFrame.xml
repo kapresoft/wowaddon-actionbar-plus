@@ -1,0 +1,160 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <!--
+        SEE:
+            • Interface/FrameXML/SecureTemplates.xml
+            • Interface/FrameXML/ActionButtonTemplate.xml
+            • Interface/FrameXML/ActionButton.lua
+            • Interface/FrameXML/MultiActionBars.xml
+            • Interface/FrameXML/MultiActionBars.lua
+        -->
+
+    <Script file="ActionBarWidgetMixin.lua"/>
+    <Script file="ActionButtonWidgetMixin.lua"/>
+    <Script file="ActionBarActionEventsFrameMixin.lua"/>
+    <Script file="ActionBarButtonEventsFrameMixin.lua"/>
+
+    <Script file="ActionBarTemplateMixin.lua"/>
+    <Script file="ActionBarButtonTemplateMixin.lua"/>
+    <Script file="ActionBarBuilderMixin.lua"/>
+
+    <Script file="ActionBar.lua"/>
+    <Script file="ActionButtonUtil.lua"/>
+
+    <Frame name="ABP_BaseActionBarFrame" toplevel="true"
+           parent="UIParent" frameStrata="MEDIUM" virtual="true"
+           hidden="true" enableMouse="true" movable="true"
+           resizable="true" alpha="1.0"
+           inherits="BackdropTemplate">
+    </Frame>
+
+    <Frame name="ABP_ActionBarTemplate" virtual="true" toplevel="true"
+           inherits="ABP_BaseActionBarFrame"
+           mixin="ABP_ActionBarTemplateMixin">
+        <Attributes>
+            <Attribute name="frameLevel" type="number" value="1"/>
+        </Attributes>
+        <Scripts>
+            <OnLoad method="OnLoad" inherit="append"/>
+            <OnEvent method="OnEvent" inherit="append" />
+            <OnDragStart method="OnDragStart"/>
+            <OnDragStop method="OnDragStop"/>
+        </Scripts>
+    </Frame>
+
+    <CheckButton name="ABP_BaseActionBarButton" virtual="true"
+                 inherits="ActionButtonTemplate, SecureActionButtonTemplate">
+    </CheckButton>
+
+    <!-- Similar to: Interface/FrameXML/ActionBarFrame.xml#ActionBarButtonCodeTemplate-->
+    <CheckButton name="ABP_ActionBarButtonTemplate" virtual="true"
+                 inherits="ABP_BaseActionBarButton"
+                 mixin="ABP_ActionBarButtonTemplateMixin">
+        <Attributes>
+            <Attribute name="buttonSize" type="number" value="36"/>
+        </Attributes>
+        <Scripts>
+            <OnLoad method="OnLoad" inherit="append"/>
+            <OnEvent method="OnEvent"/>
+            <PostClick method="PostClick"/>
+            <PreClick method="PreClick"/>
+            <OnDragStart method="OnDragStart"/>
+            <OnDragStop method="OnDragStop"/>
+            <OnMouseUp method="OnMouseUp" />
+            <OnEnter method="OnEnter" inherit="append"/>
+            <OnLeave method="OnLeave" inherit="append"/>
+            <OnReceiveDrag method="OnReceiveDrag"/>
+            <!--
+            <OnAttributeChanged method="OnAttributeChanged"/>
+            <OnUpdate method="OnUpdate" inherit="append"/>
+            -->
+        </Scripts>
+    </CheckButton>
+
+    <!-- This is the main template for CheckButton, there can be more than one of these -->
+    <CheckButton name="ABP_ActionBarButtonTemplate1" virtual="true"
+                 inherits="ABP_ActionBarButtonTemplate">
+        <Layers>
+            <Layer level="ARTWORK" textureSubLevel="-1">
+                <Texture name="$parentFloatingBG"
+                         file="Interface\Buttons\UI-Quickslot" alpha="0.4">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="-15" y="15"/>
+                        <Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <!--
+        <Layers>
+            <Layer level="ARTWORK" textureSubLevel="-1">
+                <Texture name="$parentFloatingBG"
+                         file="interface\addons\actionbarplus\Core\Assets\Textures\ui-button-empty" alpha="0.2">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                        <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <NormalTexture name="$parentNormalTexture" parentKey="NormalTexture"
+                       file="interface\addons\actionbarplus\Core\Assets\Textures\ui-button-empty">
+            <Size>
+                <AbsDimension x="36" y="36"/>
+            </Size>
+            <Anchors>
+                <Anchor point="CENTER">
+                    <Offset>
+                        <AbsDimension x="0" y="0"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </NormalTexture>
+        -->
+    </CheckButton>
+
+    <!-- See: ActionBarControllerMixin#Build() -->
+    <!-- TODO: Create ActionBar 1 to 9   -->
+    <Frame name="ABP_ActionBarFrameTemplate1" virtual="true"
+           inherits="ABP_ActionBarTemplate">
+        <KeyValues>
+            <KeyValue key="backdropInfo" value="BACKDROP_DIALOG_EDGE_32" type="global" />
+        </KeyValues>
+        <Size x="288" y="112"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Background">
+                    <Color r="0.0" g="0.0" b="0.0" a="0.0"/>
+                    <Size>
+                        <AbsDimension x="276" y="100"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="-10" y="8"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <CheckButton name="$parentButton1" parentKey="Button1" inherits="ABP_ActionBarButtonTemplate1" id="1">
+                <Anchors>
+                    <Anchor point="LEFT"/>
+                </Anchors>
+            </CheckButton>
+        </Frames>
+    </Frame>
+
+    <Frame name="ABP_ActionBarButtonEventsFrame" mixin="ABP_ActionBarButtonEventsFrameMixin">
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
+        </Scripts>
+    </Frame>
+    <Frame name="ABP_ActionBarActionEventsFrame" mixin="ABP_ActionBarActionEventsFrameMixin">
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
+        </Scripts>
+    </Frame>
+
+</Ui>

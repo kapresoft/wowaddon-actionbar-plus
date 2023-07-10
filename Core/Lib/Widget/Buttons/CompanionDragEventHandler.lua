@@ -20,7 +20,7 @@ New Instance
 -------------------------------------------------------------------------------]]
 ---@class CompanionDragEventHandler : DragEventHandler
 local L = LibStub:NewLibrary(M.CompanionDragEventHandler); if not L then return end
-local p = L.logger
+local p = L.logger()
 
 ---@class CompanionAttributeSetter : BaseAttributeSetter
 local S = LibStub:NewLibrary(M.CompanionAttributeSetter); if not S then return end

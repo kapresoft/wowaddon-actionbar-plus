@@ -7,6 +7,8 @@
     <Script file="ButtonMixin.lua"/>
     <Script file="ButtonUI.lua"/>
     <Script file="FrameHandleMixin.lua"/>
+    <Script file="PlayerAuraMapping.lua"/>
+    <Script file="PlayerAuraUtil.lua"/>
     <Script file="ButtonFrameFactory.lua"/>
     <Script file="BaseAttributeSetter.lua"/>
     <Script file="SpellAttributeSetter.lua"/>

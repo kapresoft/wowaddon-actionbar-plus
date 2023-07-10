@@ -242,19 +242,21 @@ end
 --- @param event string
 local function OnPlayerControlLost(widget, event, ...)
     if not widget:IsHideWhenTaxi() then return end
-    C_Timer.After(1, function()
+    C_Timer.NewTicker(1, function()
         local playerOnTaxi = UnitOnTaxi(GC.UnitId.player)
-        p:log(10, 'Player on Taxi: %s [%s]', playerOnTaxi, GetTime())
+        --p:log(0, 'Player on Taxi: %s [%s]', playerOnTaxi, GetTime())
         if playerOnTaxi ~= true then return end
-        WMX:ShowActionbarsDelayed(false, 1)
-    end)
+        WMX:ShowActionbars(false)
+    end, 2)
 end
 
 --- @param widget ButtonUIWidget
 --- @param event string
 local function OnPlayerControlGained(widget, event, ...)
     if not widget:IsHideWhenTaxi() then return end
-    WMX:ShowActionbarsDelayed(true, 2)
+    C_Timer.NewTicker(1, function()
+        WMX:ShowActionbars(false)
+    end, 2)
 end
 
 --- @see "UnitDocumentation.lua"

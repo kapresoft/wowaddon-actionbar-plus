@@ -21,13 +21,13 @@ local _TooltipFrameHandlerWidget = {
 
 --- @class TooltipFrameHandler : BaseLibraryObject_WithAceEvent
 local _TooltipFrameHandler = {
-    --- @type Logger
+    --- @type fun() : Logger
     logger = {}
 }
 
 --- @type TooltipFrameHandler
-local L = AceEvent:Embed({ logger = ns.O.LogFactory('TooltipFrameHandler') })
-local p = L.logger
+local L = AceEvent:Embed({ logger = function() return ns.O.LogFactory('TooltipFrameHandler') end })
+local p = L.logger()
 
 --[[-----------------------------------------------------------------------------
 Support Functions

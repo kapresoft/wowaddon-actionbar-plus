@@ -51,6 +51,8 @@ local function GlobalConstantProperties(o)
     local consoleCommandTextFormat = '|cfd2db9fb%s|r'
     local consoleKeyValueTextFormat = '|cfdfbeb2d%s|r: %s'
 
+    o.V2 = false
+
     --- @class GlobalConstants_Default
     local Default = {
         FrameAnchor = {
@@ -60,7 +62,7 @@ local function GlobalConstantProperties(o)
 
     --- @Class AddonFeatures
     local FEATURES = {
-        ENABLE_LOGGING = true,
+        ENABLE_LOGGING = false,
         ENABLE_RANGE_INDICATOR_UPDATE_ON_SPELLCAST = true
     }
 
@@ -226,6 +228,7 @@ local function GlobalConstantProperties(o)
         SPELL_UPDATE_COOLDOWN = 'SPELL_UPDATE_COOLDOWN',
         SPELL_UPDATE_USABLE = 'SPELL_UPDATE_USABLE',
 
+        UNIT_AURA = 'UNIT_AURA',
         UNIT_HEALTH = 'UNIT_HEALTH',
         UNIT_POWER_FREQUENT = 'UNIT_POWER_FREQUENT',
         --- It fires when:
@@ -268,16 +271,18 @@ local function GlobalConstantProperties(o)
         OnMacroAttributesSet         = newMsg('OnMacroAttributesSet'),
         OnUpdateMacroState           = newMsg('OnUpdateMacroState'),
         OnUpdateItemState            = newMsg('OnUpdateItemState'),
-        OnSpellCastSucceeded         = newMsg('OnSpellCastSucceeded'),
         MacroAttributeSetter_OnSetIcon     = newMsg('MacroAttributeSetter:OnSetIcon'),
         MacroAttributeSetter_OnShowTooltip = newMsg('MacroAttributeSetter:OnShowTooltip'),
         -- External Add-On Integration
         OnBagUpdateExt               = newMsg('OnBagUpdateExt'),
         OnButtonPostClickExt         = newMsg('OnButtonPostClickExt'),
+        OnSpellCastSucceeded         = newMsg('OnSpellCastSucceeded'),
         OnSpellCastStartExt          = newMsg('OnSpellCastStartExt'),
         OnSpellCastSentExt           = newMsg('OnSpellCastSentExt'),
         OnSpellCastStopExt           = newMsg('OnSpellCastStopExt'),
         OnSpellCastFailedExt         = newMsg('OnSpellCastFailedExt'),
+        OnPlayerAurasAdded           = newMsg('OnPlayerAurasAdded'),
+        OnPlayerAuraRemoved          = newMsg('OnPlayerAuraRemoved'),
         --- Relayed Events
         PLAYER_ENTERING_WORLD        = newMsg(Events.PLAYER_ENTERING_WORLD),
         EQUIPMENT_SETS_CHANGED       = newMsg(Events.EQUIPMENT_SETS_CHANGED),
@@ -562,6 +567,17 @@ local function GlobalConstantMethods(o)
         if IsBlank(macroName) then return nil end
         local _, slotID = macroName:gmatch("(%w+)%+(%w+)")()
         return IsNotBlank(slotID)
+    end
+
+    --- @return SpecializationIndex
+    function o:GetSpecializationIndex()
+        if GetSpecialization then return GetSpecialization()
+        elseif GetActiveTalentGroup then return GetActiveTalentGroup() end; return 1
+    end
+
+    --- @return UnitClass
+    function o:GetPlayerClass()
+        local _, c = UnitClass('player'); return c
     end
 end
 

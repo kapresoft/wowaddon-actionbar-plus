@@ -53,7 +53,7 @@ function L:IsValid()
     p:log(20, 'Cursor is valid: %s', self.cursorInfo)
     return true
 end
---- @return string
+--- @return ActionTypeName
 function L:GetType() return self.cursorInfo.type end
 
 --- @return string The cursor subType, i.e. 'm6'
@@ -62,3 +62,15 @@ function L:GetSubType() return self.cursorInfo.subType end
 --- @return CursorInfo
 function L:GetCursor() return self.cursorInfo end
 
+function L:ClearCursor() ClearCursor() end
+
+function L:IsSpell() return 'spell' == self:GetType() end
+function L:IsItem() return 'item' == self:GetType() end
+function L:IsMacro() return 'macro' == self:GetType() end
+function L:IsMount() return 'mount' == self:GetType() end
+function L:IsBattlePet() return 'battlepet' == self:GetType() end
+function L:IsPetAction() return 'petaction' == self:GetType() end
+function L:IsMoney() return 'money' == self:GetType() end
+function L:IsEquipmentSet() return 'equipmentset' == self:GetType() end
+function L:IsCompanion() return 'companion' == self:GetType() end
+function L:IsMacroText() return 'macrotext' == self:GetType() end

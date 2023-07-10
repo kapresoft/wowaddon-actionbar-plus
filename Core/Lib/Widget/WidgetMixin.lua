@@ -183,11 +183,14 @@ end
 
 --- @class BindingInfo
 local BindingInfo = {
+    name = 'command',
     btnName = '', category = '',
-    key1 = '', key1Short = '', key2 = key2,
+    key1 = '', key1Short = '', key2 = 'key2',
+    --- @type BindingDetails
     details = { action = '', buttonPressed = '' }
 }
 
+--- TODO: Delete GetBarBindingsMap() Unused
 --- @return table The binding map with button names as the key
 function _L:GetBarBindingsMap()
     local barBindingsMap = {}
@@ -205,17 +208,13 @@ function _L:GetBarBindingsMap()
                 key1Short = sreplace(key1Short, 'META', 'm')
                 key1Short = String.ReplaceAllCharButLast(key1Short, '-')
             end
-            barBindingsMap[bindingDetails.buttonName] = {
-                btnName = bindingDetails.buttonName, category = cat,
-                key1 = key1, key1Short = key1Short, key2 = key2,
-                details = { action = bindingDetails.action, buttonPressed = bindingDetails.buttonPressed }
-            }
+            barBindingsMap[bindingDetails.buttonName] = self:GetBarBindings(bindingDetails.buttonName)
         end
     end
     return barBindingsMap
 end
 
---- @return BindingDetails
+--- @return BindingInfo
 --- @param btnName string The button name
 function _L:GetBarBindings(btnName)
     if IsBlank(btnName) then return nil end
@@ -233,10 +232,13 @@ function _L:GetBarBindings(btnName)
                 key1Short = sreplace(key1Short, 'META', 'm')
                 key1Short = String.ReplaceAllCharButLast(key1Short, '-')
             end
-            return {
+            --- @type BindingInfo
+            local b = {
                 name = command, btnName = btnName, category = cat,
-                key1 = key1, key1Short = key1Short, key2 = key2
+                key1 = key1, key1Short = key1Short, key2 = key2,
+                details = bindingDetails
             }
+            return b
         end
     end
     return nil

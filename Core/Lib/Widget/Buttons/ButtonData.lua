@@ -29,7 +29,7 @@ New Instance
 -------------------------------------------------------------------------------]]
 --- @class ButtonData : BaseLibraryObject
 local L = LibStub:NewLibrary(ns.M.ButtonData)
-local p = L.logger
+local p = L.logger()
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -87,17 +87,16 @@ local function PropsAndMethods(o)
     --- @return Profile_Button
     function o:GetConfig()
         local w = self.widget
-        local profile = w.profile
-        local profileButton = profile:GetButtonData(w.frameIndex, w.buttonName)
+        local profileButton = P:GetButtonData(w.frameIndex, w.buttonName)
         -- self cleanup
         CleanupTypeData(profileButton)
         return profileButton
     end
 
     --- @return Profile_Config
-    function o:GetProfileConfig() return self.widget.profile:P() end
+    function o:GetProfileConfig() return P:P() end
     --- @return boolean
-    function o:IsHideWhenTaxi() return self.widget.profile:IsHideWhenTaxi() end
+    function o:IsHideWhenTaxi() return P:IsHideWhenTaxi() end
     --- @return boolean
     function o:ContainsValidAction() return self:GetActionName() ~= nil end
     --- @return string

@@ -13,16 +13,18 @@ Local Vars
 local _, ns = ...
 local O, GC, LibStub = ns.O, ns.O.GlobalConstants, ns.O.LibStub
 
-local BaseAPI, API = O.BaseAPI, O.API
+local BaseAPI, API, pformat = O.BaseAPI, O.API, ns.pformat
 local E, MSG, UnitId = GC.E, GC.M,  GC.UnitId
 local B = O.BaseAPI
-local AceEvent = O.AceLibrary.AceEvent
+local AceEvent, Table = O.AceLibrary.AceEvent, O.Table
+local SizeOfTable, IsEmptyTable = Table.Size, Table.IsEmpty
 local CURSOR_ITEM_TYPE = 1
 
 --[[-----------------------------------------------------------------------------
 Interface
 -------------------------------------------------------------------------------]]
 local ABPI = function() return O.ActionbarPlusAPI  end
+local AU = function() return O.PlayerAuraUtil  end
 
 --- @class EventFrameInterface : _Frame
 local _EventFrame = {
@@ -53,7 +55,7 @@ local p = L:GetLogger()
 --- @param abp ActionbarPlus
 L:RegisterMessage(MSG.OnAddOnInitialized, function(msg, abp)
     p:log(10, 'MSG::R: %s', msg)
-    abp.addonEvents:RegisterEvents()
+    abp.addonEvents():RegisterEvents()
 end)
 
 --[[-----------------------------------------------------------------------------
@@ -76,9 +78,7 @@ end
 --- @param event string
 local function OnUpdateBindings(f, event, ...)
     if E.UPDATE_BINDINGS ~= event then return end
-    local addon = f.ctx.addon
-    addon.barBindings = f.ctx.widgetMixin:GetBarBindingsMap()
-    if addon.barBindings then f.ctx.buttonFactory:UpdateKeybindText() end
+    f.ctx.buttonFactory:UpdateKeybindText()
 end
 
 --- @param f EventFrameInterface
@@ -204,13 +204,17 @@ end
 
 --- @param f EventFrameInterface
 local function OnSpellCastSucceeded(f, ...)
+    --- @type ButtonFactory
     local bf = f.ctx.buttonFactory
+
     bf:fevf(function(fw)
-        fw:fevb(function(bw) return bw:IsItemOrMacro() end,
-                function(bw)
-                    C_Timer.NewTicker(0.5, function()
-                        bw:UpdateItemOrMacroState() end, 2)
-                end)
+        fw:feb(function(bw)
+            if bw:IsSpell() then
+                C_Timer.NewTicker(0.1, function() bw:UpdateSpellState() end, 2)
+            elseif bw:IsItemOrMacro() then
+                C_Timer.NewTicker(0.1, function() bw:UpdateItemOrMacroState() end, 2)
+            end
+        end)
     end)
     L:SendMessage(GC.M.OnSpellCastSucceeded, ns.M.ActionbarPlusEventMixin)
 end
@@ -284,8 +288,21 @@ end
 
 --- @param f EventFrameInterface
 --- @param event string
-local function OnPlayerEnteringWorld(f, event, ...)
-    OnStealthIconUpdate(f.ctx)
+---@param updateInfo UnitAuraUpdateInfo
+local function OnPlayerAura(f, event, unitTarget, updateInfo)
+    --p:log('E[%s]: unit=%s u=[%s] (%s)', event, unitTarget, pformat(updateInfo), GetTime())
+    if GC.UnitId.player ~= unitTarget then return end
+
+    local playerAuras = AU():GetPlayerSpellsFromAura(updateInfo)
+    if SizeOfTable(playerAuras) > 0 then L:SendMessage(MSG.OnPlayerAurasAdded, playerAuras) end
+
+    local removedAuras = AU():GetRemovedAuras(updateInfo)
+    if SizeOfTable(removedAuras) > 0 then
+        for rID, aura in pairs(removedAuras) do
+            L:SendMessage(MSG.OnPlayerAuraRemoved, aura)
+            AU():RemoveAura(aura)
+        end
+    end
 end
 
 --- @param f EventFrameInterface
@@ -411,8 +428,15 @@ function L:RegisterPlayerEnteringWorld()
     f:SetScript(E.OnEvent, OnPlayerEnteringWorld)
     RegisterFrameForEvents(f, { E.PLAYER_ENTERING_WORLD })
 end
+function L:RegisterPlayerAura()
+    local f = self:CreateEventFrame()
+    f:SetScript(E.OnEvent, OnPlayerAura)
+    RegisterFrameForUnitEvents(f, { E.UNIT_AURA }, GC.UnitId.player)
+end
 
 function L:RegisterEvents()
+    if GC.V2 == true then return end
+
     p:log(30, 'RegisterEvents called..')
     self:RegisterActionbarsEventFrame()
     self:RegisterKeybindingsEventFrame()
@@ -423,6 +447,7 @@ function L:RegisterEvents()
     self:RegisterBagEvents()
     self:RegisterEventToMessageTransmitter()
     self:RegisterPlayerEnteringWorld()
+    --self:RegisterPlayerAura()
     if B:SupportsPetBattles() then self:RegisterPetBattleFrame() end
     --TODO: Need to investigate Wintergrasp (hides/shows intermittently)
     if B:SupportsVehicles() then self:RegisterVehicleFrame() end

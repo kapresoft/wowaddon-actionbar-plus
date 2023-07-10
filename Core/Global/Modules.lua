@@ -65,6 +65,8 @@ local M = {
     MountDragEventHandler = 'MountDragEventHandler',
     MountAttributeSetter = 'MountAttributeSetter',
     PickupHandler = 'PickupHandler',
+    PlayerAuraUtil = 'PlayerAuraUtil',
+    PlayerAuraMapping = 'PlayerAuraMapping',
     Profile = 'Profile',
     ProfileInitializer = 'ProfileInitializer',
     ReceiveDragEventHandler = 'ReceiveDragEventHandler',
@@ -163,6 +165,10 @@ local GlobalObjectsTemplate = {
     Mixin = {},
     --- @type PickupHandler
     PickupHandler = {},
+    --- @type PlayerAuraUtil
+    PlayerAuraUtil = {},
+    --- @type PlayerAuraMapping
+    PlayerAuraMapping = {},
     --- @type Profile
     Profile = {},
     --- @type ProfileInitializer
@@ -181,6 +187,17 @@ local GlobalObjectsTemplate = {
     Table = {},
     --- @type WidgetMixin
     WidgetMixin = {},
+
+    --- @type ActionBarController
+    ActionBarController = {},
+    --- @type ActionBarBuilder
+    ActionBarBuilder = {},
+    --- @type ActionbarWidgetMixin
+    ActionbarWidgetMixin = {},
+    --- @type ActionButtonWidgetMixin
+    ActionButtonWidgetMixin = {},
+    --- @type ActionBarActionEventsFrame
+    ActionBarActionEventsFrame = {},
 }
 L.M = M
 ns.M = M
