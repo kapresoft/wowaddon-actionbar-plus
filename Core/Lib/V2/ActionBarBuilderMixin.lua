@@ -124,10 +124,10 @@ local function PropsAndMethods(o)
 
         --- This triggers ActionButtonWidgetMixin:Init() when creating CHECK_BUTTON_TEMPLATE
         --- @type ActionButton
-        local checkButton = CreateFrame('CheckButton', btnName, f, CHECK_BUTTON_TEMPLATE, btnIndex)
-        if checkButton.SetParentKey then checkButton:SetParentKey(btnIndexName) end
-        checkButton.widget():SetButtonAttributes()
-        f.widget():AddButton(checkButton)
+        local actionButton = CreateFrame('CheckButton', btnName, f, CHECK_BUTTON_TEMPLATE, btnIndex)
+        if actionButton.SetParentKey then actionButton:SetParentKey(btnIndexName) end
+        actionButton.widget():SetButtonAttributes()
+        f.widget():AddButton(actionButton)
 
         -- todo: load button
         -- if not empty
@@ -149,7 +149,7 @@ local function PropsAndMethods(o)
         --[[btnWidget:SetButtonAttributes()
         btnWidget:SetCallback("OnMacroChanged", OnMacroChanged)
         btnWidget:UpdateStateDelayed(0.05)]]
-        return checkButton
+        return actionButton
     end
 
     --- @param frameIndex number
