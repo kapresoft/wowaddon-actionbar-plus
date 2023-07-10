@@ -45,10 +45,10 @@ end
 --- Pass event down to the buttons
 --- @param event string
 function L:OnEvent(event, ...)
-    p:log(0, 'OnEvent(%s): args=%s', event, ns.pformat({...}))
+    p:log(10, 'OnEvent(%s): args=%s', event, ns.pformat({...}))
 
     for k, actionButton in pairs(self.frames) do
-        p:log('Calling OnEvent[%s]', actionButton:GetName())
+        p:log(10, 'Calling OnEvent[%s]', actionButton:GetName())
         actionButton:OnEvent(event, ...);
     end
 end

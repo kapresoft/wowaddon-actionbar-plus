@@ -19,7 +19,8 @@ local L = {
     index = -1,
     --- @type fun():ActionBarFrame
     frame = nil,
-
+    --- @type table<Index, ActionButton>
+    children = nil,
     frameHandleHeight = 4,
     dragHandleHeight = 0,
     padding = 2,
@@ -48,9 +49,15 @@ local function PropsAndMethods(o)
     ---@param index Index The frame Index
     function o:Init(actionBarFrame, index)
         self.index = index
+        self.children = {}
         self.frame = function() return actionBarFrame end
         self.frame().widget = function() return self end
     end
+
+    --- @param btn ActionButton
+    function o:AddButton(btn) table.insert(self.children, btn) end
+
+    function o:GetButtons() return self.children end
 
     function o:InitAnchor()
         local anchor = O.Profile:GetAnchor(self.index); if not anchor then return nil end

@@ -38,23 +38,10 @@ ns.O.ActionBarBuilder = L
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
-local function SetupButtonOne()
-    local actionBar = ActionbarPlusF1
-    if not (actionBar and actionBar.Button1) then return end
-    --- @type ActionButton
-    local b = actionBar.Button1
-    b:SetAttribute('type', 'spell')
-    local spell, _, icon = GetSpellInfo('Arcane Intellect')
-    if not (spell and icon) then return end
-
-    p:log(10, 'spell: %s icon: %s', tostring(spell), tostring(icon))
-    b:SetAttribute('spell', spell)
-    b:SetNormalTexture(icon)
-    b:SetPushedTexture(icon)
-    if b:GetNormalTexture() then
-        b:GetNormalTexture():SetAllPoints(b)
-    end
-
+---@param btnIndex Index
+---@param bar ActionBarFrame
+local function GetActionButton(bar, btnIndex)
+    return bar and btnIndex and bar['Button' .. btnIndex]
 end
 
 --[[-----------------------------------------------------------------------------
@@ -73,9 +60,6 @@ local function PropsAndMethods(o)
             local f = self:CreateActionbarGroup(i, fn)
             --f:ShowGroupIfEnabled()
         end
-
-        -- todo: temporary
-        SetupButtonOne()
     end
 
     function o:CreateActionbarFrames()
@@ -98,25 +82,26 @@ local function PropsAndMethods(o)
         local rowSize = barConfig.widget.rowSize
         local colSize = barConfig.widget.colSize
 
+        --- @type ActionBarFrame
         local f = _G[frameName]
-        f.index = frameIndex
+        --f.index = frameIndex
         self:CreateButtons(f, rowSize, colSize)
         --f:SetInitialState()
         return f
     end
 
-    ---@param fw _Frame
-    function o:CreateButtons(fw, rowSize, colSize)
+    ---@param bar ActionBarFrame
+    function o:CreateButtons(bar, rowSize, colSize)
         --fw:ClearButtons()
         local index = 0
-        local children = fw:GetChildren()
+        local children = {}
         for row=1, rowSize do
             for col=1, colSize do
                 index = index + 1
                 --- @type _CheckButton
-                local btnUI = fw['Button' .. index]
+                local btnUI = GetActionButton(bar, index)
                 if not btnUI then
-                    btnUI = self:CreateSingleButton(fw, row, col, index)
+                    btnUI = self:CreateSingleButton(bar, row, col, index)
                 end
                 tinsert(children, btnUI)
                 p:log(10, 'Button[%s]: id=%s', btnUI:GetName(), btnUI:GetID())
@@ -124,23 +109,25 @@ local function PropsAndMethods(o)
             end
         end
         --self:HideUnusedButtons(fw)
-        self:LayoutButtonGrid(fw)
+        self:LayoutButtonGrid(bar)
     end
 
-    --- @param frameWidget _Frame
+    --- @param f ActionBarFrame
     --- @param row number
     --- @param col number
     --- @param btnIndex number The button index number
     --- @return ButtonUIWidget
-    function o:CreateSingleButton(frameWidget, row, col, btnIndex)
+    function o:CreateSingleButton(f, row, col, btnIndex)
         local btnIndexName = sformat('Button%s', btnIndex)
         --local btnName = frameWidget:GetName() .. btnIndexName
         local btnName = sformat('$parent%s', btnIndexName)
-        --- @type ActionBarButtonTemplate
-        local checkButton = CreateFrame('CheckButton', btnName, frameWidget, CHECK_BUTTON_TEMPLATE, btnIndex)
+
+        --- This triggers ActionButtonWidgetMixin:Init() when creating CHECK_BUTTON_TEMPLATE
+        --- @type ActionButton
+        local checkButton = CreateFrame('CheckButton', btnName, f, CHECK_BUTTON_TEMPLATE, btnIndex)
         if checkButton.SetParentKey then checkButton:SetParentKey(btnIndexName) end
         checkButton.widget():SetButtonAttributes()
-
+        f.widget():AddButton(checkButton)
 
         -- todo: load button
         -- if not empty
@@ -176,20 +163,20 @@ local function PropsAndMethods(o)
         f:RegisterForDrag('LeftButton')
 
         CreateAndInitFromMixin(ns.O.ActionbarWidgetMixin, f, frameIndex)
-        f.frameIndex = frameIndex
         tinsert(actionBars, f:GetName())
 
         return f
     end
 
-    --- @param f _Frame
-    function o:LayoutButtonGrid(f)
-
-        local backDropPadding = f:GetBackdrop().edgeSize/2
+    --- @param bar ActionBarFrame
+    function o:LayoutButtonGrid(bar)
+        local index = bar.widget().index
+        local backDropPadding = bar:GetBackdrop().edgeSize/2
         local horizontalButtonPadding = 8
         local verticalButtonPadding = 8
 
-        local barConfig = self:profile():GetBar(f.index)
+        local barConfig = self:profile():GetBar(index)
+
         --local buttonSize = barConfig.widget.buttonSize
         local buttonSize = 36
         local paddingX = horizontalButtonPadding
@@ -207,12 +194,12 @@ local function PropsAndMethods(o)
         function layout:GetCustomOffset(row, col) return backDropPadding, -(backDropPadding - 2) end
 
         --- @type _AnchorMixin
-        local anchor = CreateAnchor("TOPLEFT", f:GetName(), "TOPLEFT", 0, -2);
-        local buttons = self:GetButtons(f)
+        local anchor = CreateAnchor("TOPLEFT", bar:GetName(), "TOPLEFT", 0, -2);
+        local buttons = bar.widget():GetButtons()
         AnchorUtil.GridLayout(buttons, anchor, layout);
 
         --- @type _Texture
-        local bg = f.Background
+        local bg = bar.Background
         local colSize = barConfig.widget.colSize
         local framePadding = 10
         local width = buttonSize * colSize + (horizontalButtonPadding * (colSize - 1)) + (framePadding*2)
@@ -220,11 +207,11 @@ local function PropsAndMethods(o)
 
     end
 
-    --- @param f _Frame
+    --[[--- @param f ActionBarFrame
     function o:GetButtons(f)
         local buttons = {}
-        local children = f:GetChildren()
-        p:log(10, 'children: %s', #children)
+        local children = f.widget():GetButtons()
+        p:log(0, 'children: %s', #children)
         for i, child in ipairs(children) do
             p:log(10, 'child: %s', child:GetName())
             if child:GetObjectType() == 'CheckButton' then
@@ -232,6 +219,6 @@ local function PropsAndMethods(o)
             end
         end
         return buttons
-    end
+    end]]
 
 end; PropsAndMethods(L)

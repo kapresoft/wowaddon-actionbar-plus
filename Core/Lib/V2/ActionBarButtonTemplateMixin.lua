@@ -62,6 +62,7 @@ local function PropsAndMethods(o)
     end
 
     function o:OnReceiveDrag()
+        --if not self.index then return end
         self.widget():OnReceiveDragHandler()
     end
 

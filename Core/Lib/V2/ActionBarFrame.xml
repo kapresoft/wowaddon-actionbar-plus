@@ -136,11 +136,11 @@
             </Layer>
         </Layers>
         <Frames>
-            <CheckButton name="$parentButton1" parentKey="Button1" inherits="ABP_ActionBarButtonTemplate1" id="1">
+            <!--<CheckButton name="$parentButton1" parentKey="Button1" inherits="ABP_ActionBarButtonTemplate1" id="1">
                 <Anchors>
                     <Anchor point="LEFT"/>
                 </Anchors>
-            </CheckButton>
+            </CheckButton>-->
         </Frames>
     </Frame>
 

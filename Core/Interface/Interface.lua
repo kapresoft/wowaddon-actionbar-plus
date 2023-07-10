@@ -418,18 +418,3 @@ Aliases
 -------------------------------------------------------------------------------]]
 --- @alias LayoutStrategyFn fun(index:number, barConf:Profile_Bar, context:LayoutStrategyContext)
 
-
---[[-----------------------------------------------------------------------------
-ActionbarButton
--------------------------------------------------------------------------------]]
---- @alias ActionButton _ActionButton | _CheckButton
---- #### See: Interface/FrameXML/ActionButtonTemplate.xml
---- @class _ActionButton : __CheckButton
-local _ActionButton = {
-    --- @type fun():ActionBarWidget
-    widget = nil,
-    --- @type CooldownFrame
-    cooldown = nil,
-    --- @type _Texture
-    NormalTexture = nil,
-}

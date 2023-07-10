@@ -62,7 +62,7 @@ local function GlobalConstantProperties(o)
 
     --- @Class AddonFeatures
     local FEATURES = {
-        ENABLE_LOGGING = false,
+        ENABLE_LOGGING = true,
         ENABLE_RANGE_INDICATOR_UPDATE_ON_SPELLCAST = true
     }
 

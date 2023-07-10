@@ -22,6 +22,8 @@ local L = {
     frameIndex = -1,
     --- @type fun():ActionButton
     button = nil,
+    --- @type ActionBarFrame
+    parentFrame = nil,
     --- See: Interface/FrameXML/ActionButtonTemplate.xml
     --- @type fun():CooldownFrame
     cooldown = nil,
@@ -55,7 +57,8 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
----@param o ActionButtonWidgetMixin
+--- @see ActionBarButtonTemplateMixin.lua
+--- @param o ActionButtonWidgetMixin
 local function PropsAndMethods(o)
 
     ---@param actionButton ActionButton
@@ -63,12 +66,14 @@ local function PropsAndMethods(o)
         self.button = function() return actionButton end
         self.button().widget = function() return self end
         self.cooldown = function() return actionButton.cooldown end
-        self.frameIndex = self.button():GetParent().index
+        self.parentFrame = self.button():GetParent()
+        self.frameIndex = self.parentFrame.widget().index
+        --p:log('findex[%s]: %s', actionButton:GetName(),  tostring(self.frameIndex))
     end
 
     --- ### See: [UIHANDLER_OnReceiveDrag](https://wowpedia.fandom.com/wiki/UIHANDLER_OnReceiveDrag)
     function o:OnReceiveDragHandler()
-        p:log(10, 'OnReceiveDragHandler[%s]: cursor=%s',
+        p:log(0, 'OnReceiveDragHandler[%s]: cursor=%s',
                 self.button():GetName(), pformat(O.API:GetCursorInfo()))
         local cursor = ns:CreateCursorUtil()
         if not cursor:IsValid() then
@@ -76,7 +81,7 @@ local function PropsAndMethods(o)
             return false else
         end
 
-        p:log(20, 'OnReceiveDrag| CursorInfo: %s', pformat:B()(cursor:GetCursor()))
+        p:log(0, 'OnReceiveDrag| CursorInfo: %s', pformat:B()(cursor:GetCursor()))
         --cursorUtil:ClearCursor()
 
         self:HandleCursor(cursor)
@@ -98,6 +103,8 @@ local function PropsAndMethods(o)
 
     --- @return Profile_Button
     function o:config()
+        --if not self.index then return end
+        --p:log('findex: %s index: %s', tostring(self.frameIndex), tostring(self.index))
         local p = O.Profile:GetButtonData(self.frameIndex, self.button():GetName())
         CleanupActionTypeData(p)
         return p
