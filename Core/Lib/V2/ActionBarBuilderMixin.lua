@@ -45,6 +45,8 @@ local function SetupButtonOne()
     local b = actionBar.Button1
     b:SetAttribute('type', 'spell')
     local spell, _, icon = GetSpellInfo('Arcane Intellect')
+    if not (spell and icon) then return end
+
     p:log(10, 'spell: %s icon: %s', tostring(spell), tostring(icon))
     b:SetAttribute('spell', spell)
     b:SetNormalTexture(icon)
