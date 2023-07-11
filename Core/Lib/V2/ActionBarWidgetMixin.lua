@@ -41,6 +41,8 @@ Methods
 ---@param o ActionbarWidgetMixin
 local function PropsAndMethods(o)
 
+    o.Profile = O.Profile
+
     --- ### Usage:
     --- ```
     --- frameWidget = CreateAndInitFromMixin('ActionBarWidgetMixin', actionBarFrame)
@@ -53,6 +55,9 @@ local function PropsAndMethods(o)
         self.frame = function() return actionBarFrame end
         self.frame().widget = function() return self end
     end
+
+    --- @return Profile_Bar
+    function o:conf() return self.Profile:GetBar(self.index) end
 
     --- @param btn ActionButton
     function o:AddButton(btn) table.insert(self.children, btn) end

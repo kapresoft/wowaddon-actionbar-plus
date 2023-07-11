@@ -51,7 +51,7 @@ end
 ---@return boolean returns true if the cursor was handled appropriately
 function L:HandleV2(btn, cursor)
     local spellCursor = API:ToSpellCursorInfo(cursor:GetCursor())
-    p:log('HandleV2: btn=%s cursor=%s', btn.button():GetName(), pformat(spellCursor))
+    p:log(0, 'HandleV2: btn=%s cursor=%s', btn.button():GetName(), pformat(spellCursor))
     if IsPassiveSpell(spellCursor.spellID) then return false end
 
     local type = spellCursor.type

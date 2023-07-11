@@ -20,15 +20,15 @@ local L = {
     index = -1,
     --- @type number
     frameIndex = -1,
-    --- @type fun():ActionButton
+    --- @type fun() : ActionButton
     button = nil,
     --- @type ActionBarFrame
     parentFrame = nil,
     --- See: Interface/FrameXML/ActionButtonTemplate.xml
-    --- @type fun():CooldownFrame
+    --- @type fun() : CooldownFrame
     cooldown = nil,
 
-    --- @type fun():Profile_Button
+    --- @type fun() : Profile_Button
     config = nil,
 
     placement = { rowNum = -1, colNum = -1 },
@@ -151,6 +151,28 @@ local function PropsAndMethods(o)
         if setter.SetAttributesV2 then setter:SetAttributesV2(self) end
     end
 
+    --- @see Interface/FrameXML/ActionButtonTemplate.xml
+    function o:SetButtonUIAttributes()
+        local barConf = self.parentFrame.widget():conf()
+        local btnSize = barConf.widget.buttonSize
+        p:log(10, 'size[%s]: %s', self.button():GetName(), btnSize)
+        local btn = self.button()
+
+        btn:GetHighlightTexture():SetAlpha(1.0)
+        btn:GetPushedTexture():SetAlpha(0.7)
+        btn:GetNormalTexture():SetAlpha(0.4)
+        btn:GetCheckedTexture():SetAlpha(1.0)
+
+        local scale = btnSize/36
+        p:log('scale: %s', scale)
+        btn:SetScale(scale)
+        if not self:IsEmpty() then
+            btn:GetPushedTexture():SetAllPoints(btn)
+            btn:GetNormalTexture():SetAlpha(1.0)
+        else
+        end
+    end
+
     --- Autocorrect bad data if we have button data with
     --- btnData[type] but no btnData.type field
     ---@param btnData Profile_Button
@@ -190,9 +212,9 @@ local function PropsAndMethods(o)
     function o:IsEmpty()
         local config = self:config(); if not config then return end
         if IsEmptyTable(config) then return true end
-        local type = self.config().type
+        local type = config.type
         if IsBlankStr(type) then return true end
-        if IsEmptyTable(self.config()[type]) then return true end
+        if IsEmptyTable(config[type]) then return true end
         return false
     end
     function o:HasAction() return false == self:IsEmpty() end

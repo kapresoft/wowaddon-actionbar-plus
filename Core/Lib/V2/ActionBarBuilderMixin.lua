@@ -112,22 +112,24 @@ local function PropsAndMethods(o)
         self:LayoutButtonGrid(bar)
     end
 
-    --- @param f ActionBarFrame
+    --- @param bar ActionBarFrame
     --- @param row number
     --- @param col number
     --- @param btnIndex number The button index number
     --- @return ButtonUIWidget
-    function o:CreateSingleButton(f, row, col, btnIndex)
+    function o:CreateSingleButton(bar, row, col, btnIndex)
         local btnIndexName = sformat('Button%s', btnIndex)
         --local btnName = frameWidget:GetName() .. btnIndexName
         local btnName = sformat('$parent%s', btnIndexName)
 
         --- This triggers ActionButtonWidgetMixin:Init() when creating CHECK_BUTTON_TEMPLATE
         --- @type ActionButton
-        local actionButton = CreateFrame('CheckButton', btnName, f, CHECK_BUTTON_TEMPLATE, btnIndex)
-        if actionButton.SetParentKey then actionButton:SetParentKey(btnIndexName) end
-        actionButton.widget():SetButtonAttributes()
-        f.widget():AddButton(actionButton)
+        local btn = CreateFrame('CheckButton', btnName, bar, CHECK_BUTTON_TEMPLATE, btnIndex)
+        if btn.SetParentKey then btn:SetParentKey(btnIndexName) end
+        local bw = btn.widget()
+        bw:SetButtonAttributes()
+        bw:SetButtonUIAttributes()
+        bar.widget():AddButton(btn)
 
         -- todo: load button
         -- if not empty
@@ -149,7 +151,7 @@ local function PropsAndMethods(o)
         --[[btnWidget:SetButtonAttributes()
         btnWidget:SetCallback("OnMacroChanged", OnMacroChanged)
         btnWidget:UpdateStateDelayed(0.05)]]
-        return actionButton
+        return btn
     end
 
     --- @param frameIndex number
@@ -170,19 +172,27 @@ local function PropsAndMethods(o)
 
     --- @param bar ActionBarFrame
     function o:LayoutButtonGrid(bar)
+        local buttons = bar.widget():GetButtons()
+
         local index = bar.widget().index
         local backDropPadding = bar:GetBackdrop().edgeSize/2
         local horizontalButtonPadding = 8
         local verticalButtonPadding = 8
+        if ns:IsRetail() then
+            horizontalButtonPadding = horizontalButtonPadding + 5
+            verticalButtonPadding = verticalButtonPadding + 5
+        end
 
         local barConfig = self:profile():GetBar(index)
 
-        --local buttonSize = barConfig.widget.buttonSize
-        local buttonSize = 36
+        local scale = buttons[1]:GetScale()
+        p:log('LBG::scale=%s', scale)
+        local buttonSize = barConfig.widget.buttonSize or 32
+        --local buttonSize = 32
         local paddingX = horizontalButtonPadding
         local paddingY = verticalButtonPadding
-        local horizontalSpacing = buttonSize
-        local verticalSpacing = buttonSize
+        local horizontalSpacing = buttonSize / scale
+        local verticalSpacing = buttonSize / scale
         local stride = barConfig.widget.colSize
         -- TopLeftToBottomRight
         -- TopLeftToBottomRightVertical
@@ -195,7 +205,6 @@ local function PropsAndMethods(o)
 
         --- @type _AnchorMixin
         local anchor = CreateAnchor("TOPLEFT", bar:GetName(), "TOPLEFT", 0, -2);
-        local buttons = bar.widget():GetButtons()
         AnchorUtil.GridLayout(buttons, anchor, layout);
 
         --- @type _Texture
